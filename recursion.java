@@ -1,18 +1,21 @@
 import java.util.*;
 public class recursion{
-  public static double pError(double guess, double actual){
-    return Math.abs(guess - actual) / actual * 100.0;
+  public static boolean closeEnough(double guess, double actual){
+    return Math.abs(guess - actual) <= .00001;
   }
-  public static double sqrt(double n, double guess){
-    if (pError(guess * guess, n) > .001){
-      return sqrt(n, (n / guess + guess) / 2.0);
+  public static double sqrtHelp(double n, double guess, double tolerance){
+    if (!(Math.abs(1 - (n / (guess * guess))) <= tolerance)){
+      return sqrtHelp(n, (n / guess + guess) / 2.0, tolerance);
     } else {
       return guess;
     }
   }
 
-  public static double sqrt(double n){
-    return sqrt(n, 1);
+  public static double sqrt(double n, double tolerance){
+    if (n == 0){
+	return 0;
+    }
+    return sqrtHelp(n, 1, tolerance);
   }
 
   public static int fib(int n){
@@ -42,13 +45,75 @@ public class recursion{
     return a;
   }
 
+//testcase must be a valid index of your input/output array
+public static void testFib(int testcase){
+  recursion r = new recursion();
+  int[] input = {0,1,2,3,5,30};
+  int[] output ={0,1,1,2,5,832040};
+  int max = input.length;
+  if(testcase < input.length){
+    int in = input[testcase];
+    try{
+     
+      int ans = r.fib(in);
+      int correct = output[testcase];
+      if(ans == correct){
+        System.out.println("PASS test fib "+in+". "+correct);
+      }
+      else{
+        System.out.println("FAIL test fib"+in+". "+ans+" vs "+correct);
+       
+      }
+    }catch(IllegalArgumentException n){
+      if(in < 0){
+        System.out.println("PASS test fib"+in+" IllegalArgumentException");
+      }else{
+        System.out.println(" FAIL IllegalArgumentException in test case:"+in);
+      }
+    }catch(Exception e){
+      System.out.println(" FAIL Some exception in test case:"+in);
+    }
+  }
+}
+
+
+//testcase must be a valid index of your input/output array
+public static void testSqrt(int testcase){
+  recursion r = new recursion();
+  double[] input = {0.0,1.0, 2.0, 4.0, 7.0};
+  double[] output = {0.0,1.0,1.4142135623730951,2.0,2.6457513110645907};
+  int max = input.length;
+  if(testcase < input.length){
+    double in = input[testcase];
+    try{
+     
+      double ans = r.sqrt(in,.00001);
+      double correct = Math.sqrt(in);
+      if(closeEnough(ans,correct)){
+        System.out.println("PASS test sqrt "+in+" "+ans);
+      }
+      else{
+        System.out.println("FAIL test sqrt "+in+" "+ans+" vs "+correct);
+       
+      }
+    }catch(IllegalArgumentException n){
+      if(in < 0){
+        System.out.println("PASS test sqrt"+in+" IllegalArgumentException");
+      }else{
+        System.out.println(" FAIL IllegalArgumentException in test case:"+in);
+      }
+    }catch(Exception e){
+      System.out.println(" FAIL Some exception in test case:"+in);
+    }
+  }
+}
+
   public static void main(String[] args){
-    System.out.println("Square root of 100: " + sqrt(100.0));
-    System.out.println("Square root of 64: " + sqrt(64.0));
-    System.out.println("30th term of fib sequence: " + fib(30));
-    System.out.println("20th term of fib sequence: " + fib(20));
-    System.out.println("/n");
-    System.out.println("makeAllSums(5): " + makeAllSums(5));
-    System.out.println("makeAllSums(8): " + makeAllSums(8));
+  	for (int i = 0; i < 5; i++){
+		testSqrt(i);
+	}
+	for (int i = 0; i < 6; i++){
+		testFib(i);
+	}
   }
 }
